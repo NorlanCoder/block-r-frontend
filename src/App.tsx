@@ -18,6 +18,8 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
+import HomeAgent from "./pages/Agent/HomeAgent";
+import DemandeList from "./pages/Agent/DemandeList";
 
 export default function App() {
   return (
@@ -28,6 +30,11 @@ export default function App() {
           {/* Dashboard Layout */}
           <Route element={<AppLayout />}>
             <Route index path="/" element={<Home />} />
+
+            <Route path="/agent" >
+              <Route index element={<HomeAgent />} />
+              <Route path="demandes/list" element={<DemandeList />} />
+            </Route>
 
             {/* Others Page */}
             <Route path="/profile" element={<UserProfiles />} />
