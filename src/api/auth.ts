@@ -35,3 +35,15 @@ export const logoutUser = async (token: string) => {
 
     return response.json();
 };
+
+export const updateProfile = async (token: string, data: {prenom?: string, nom?: string, telephone?: string}) => {
+    const response = await fetch(`${apiUrl}profile`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+    });
+    return response.json();
+};
