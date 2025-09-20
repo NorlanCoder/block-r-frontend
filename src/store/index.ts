@@ -4,18 +4,21 @@ import storage from 'redux-persist/lib/storage';
 import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import authMiddleware from './middleware/authmiddleware';
 import authReducer from './slices/authSlice';
+import appReducer from './slices/appSlice';
+
 
 // Configuration de Redux Persist
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['authReducer', 'monitorReducer', 'subscriptionReducer', 'adminReducer'], 
+  whitelist: ['authReducer', 'appReducer'], 
   // blacklist: [''],
 };
 
 // Combiner les reducers
 const rootReducer = combineReducers({
   authReducer,
+  appReducer
 });
 
 // Reducer persisté avec le persistor

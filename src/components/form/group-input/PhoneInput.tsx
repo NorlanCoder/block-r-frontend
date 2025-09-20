@@ -8,7 +8,7 @@ interface CountryCode {
 interface PhoneInputProps {
   countries: CountryCode[];
   placeholder?: string;
-  onChange?: (phoneNumber: string) => void;
+  onChange?: (phoneNumber: any) => void;
   selectPosition?: "start" | "end"; // New prop for dropdown position
 }
 
