@@ -20,54 +20,62 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import HomeAgent from "./pages/Agent/HomeAgent";
 import DemandeList from "./pages/Agent/DemandeList";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistor } from "./store";
+import CustomToast from "./components/new/CustomToaster";
+import ProtectedRoute from "./components/new/ProtectedRoute";
 
 export default function App() {
   return (
     <>
-      <Router>
-        <ScrollToTop />
-        <Routes>
-          {/* Dashboard Layout */}
-          <Route element={<AppLayout />}>
-            <Route index path="/" element={<Home />} />
+      <PersistGate loading={null} persistor={persistor}>
+        <CustomToast />
+        <Router>
+          <ScrollToTop />
+          <Routes>
 
-            <Route path="/agent" >
-              <Route index element={<HomeAgent />} />
-              <Route path="demandes/list" element={<DemandeList />} />
-            </Route>
+            {/* Auth Pages */}
+            <Route path="/connexion" element={<SignIn />} />
+            <Route path="/inscription" element={<SignUp />} />
 
-            {/* Others Page */}
-            <Route path="/profile" element={<UserProfiles />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/blank" element={<Blank />} />
+            {/* Dashboard Layout */}
+              <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+                <Route index path="/" element={<Home />} />
 
-            {/* Forms */}
-            <Route path="/form-elements" element={<FormElements />} />
+                <Route path="/agent" >
+                  <Route index element={<HomeAgent />} />
+                  <Route path="demandes/list" element={<DemandeList />} />
+                </Route>
 
-            {/* Tables */}
-            <Route path="/basic-tables" element={<BasicTables />} />
+                {/* Others Page */}
+                <Route path="/profile" element={<UserProfiles />} />
+                <Route path="/calendar" element={<Calendar />} />
+                <Route path="/blank" element={<Blank />} />
 
-            {/* Ui Elements */}
-            <Route path="/alerts" element={<Alerts />} />
-            <Route path="/avatars" element={<Avatars />} />
-            <Route path="/badge" element={<Badges />} />
-            <Route path="/buttons" element={<Buttons />} />
-            <Route path="/images" element={<Images />} />
-            <Route path="/videos" element={<Videos />} />
+                {/* Forms */}
+                <Route path="/form-elements" element={<FormElements />} />
 
-            {/* Charts */}
-            <Route path="/line-chart" element={<LineChart />} />
-            <Route path="/bar-chart" element={<BarChart />} />
-          </Route>
+                {/* Tables */}
+                <Route path="/basic-tables" element={<BasicTables />} />
 
-          {/* Auth Layout */}
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
+                {/* Ui Elements */}
+                <Route path="/alerts" element={<Alerts />} />
+                <Route path="/avatars" element={<Avatars />} />
+                <Route path="/badge" element={<Badges />} />
+                <Route path="/buttons" element={<Buttons />} />
+                <Route path="/images" element={<Images />} />
+                <Route path="/videos" element={<Videos />} />
 
-          {/* Fallback Route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Router>
+                {/* Charts */}
+                <Route path="/line-chart" element={<LineChart />} />
+                <Route path="/bar-chart" element={<BarChart />} />
+              </Route>
+
+            {/* Fallback Route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
+      </PersistGate>
     </>
   );
 }

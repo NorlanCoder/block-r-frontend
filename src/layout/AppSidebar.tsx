@@ -18,6 +18,9 @@ import {
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
+import Logo1 from '../assets/logo/logo1.png'
+import Logo from '../assets/logo/logo.png'
+import LogoShort from '../assets/logo/logo-short.png'
 
 type NavItem = {
   name: string;
@@ -327,22 +330,22 @@ const AppSidebar: React.FC = () => {
             <>
               <img
                 className="dark:hidden"
-                src="/images/logo/logo.svg"
+                src={Logo}
                 alt="Logo"
-                width={150}
+                width={100}
                 height={40}
               />
               <img
                 className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
+                src={Logo}
                 alt="Logo"
-                width={150}
+                width={100}
                 height={40}
               />
             </>
           ) : (
             <img
-              src="/images/logo/logo-icon.svg"
+              src={LogoShort}
               alt="Logo"
               width={32}
               height={32}
