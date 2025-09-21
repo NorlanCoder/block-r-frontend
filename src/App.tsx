@@ -26,8 +26,35 @@ import CustomToast from "./components/new/CustomToaster";
 import ProtectedRoute from "./components/new/ProtectedRoute";
 import HomeAdminSup from "./pages/AdminSup/HomeAdminSup";
 import PrixComponent from "./pages/AdminSup/PrixComponent";
+import { setCirconscriptions, setCommunes, setDepartements } from "./store/slices/appSlice";
+import { useEffect } from "react";
+import { getCirconscriptions, getCommunes, getDepartements } from "./api/app";
+import { useDispatch } from "react-redux";
 
 export default function App() {
+
+  const dispatch = useDispatch();
+
+  const fetchCommunes = async () => {
+    const communes = await getCommunes();
+    dispatch(setCommunes(communes.data));
+  };
+  const fetchDepartements = async () => {
+    const departements = await getDepartements();
+    dispatch(setDepartements(departements.data));
+  };
+  const fetchCirconscriptions = async () => {
+    const circonscriptions = await getCirconscriptions();
+    console.log(circonscriptions);
+    dispatch(setCirconscriptions(circonscriptions.data));
+  };
+
+  useEffect(() => {
+    fetchCommunes();
+    fetchDepartements();
+    fetchCirconscriptions();
+  }, []);
+
   return (
     <>
       <PersistGate loading={null} persistor={persistor}>
