@@ -1,11 +1,11 @@
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import Button from "../../components/ui/button/Button";
-import { PlusIcon } from "../../icons";
+import { PencilIcon, PlusIcon } from "../../icons";
 import { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../../components/new/DataTable";
 import { useEffect, useRef, useState } from "react";
-import { getDemandes } from "../../api/agent";
+import { addDemande, getDemandes } from "../../api/agent";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import toast from "react-hot-toast";
@@ -14,6 +14,7 @@ import { useModal } from "../../hooks/useModal";
 import Input from "../../components/form/input/InputField";
 import Select from "../../components/form/Select";
 import PhoneInput from "../../components/form/group-input/PhoneInput";
+import Badge from "../../components/ui/badge/Badge";
 
 interface MilitantType {
   id: number;
@@ -21,13 +22,16 @@ interface MilitantType {
   prenom: string;
   email: string;
   telephone: string;
-  photo: string;
+  photo: File|null|string;
+  sexe: string;
   status: string;
   user_id: number;
   date_inscription: string;
   circonscription_id: number;
   departement_id: number;
   commune_id: number;
+  profession: string;
+  adresse: string;
   reference_carte: string;
   status_paiement: string;
   removed: string;
@@ -36,30 +40,102 @@ interface MilitantType {
   status_verification: string;
 }
 
+const defaultMilitant = {
+    id: 0,
+    nom: '',
+    prenom: '',
+    email: '',
+    telephone: '',
+    photo: null as File | null,
+    sexe: '',
+    status: '',
+    user_id: 0,
+    date_inscription: '',
+    circonscription_id: 0,
+    departement_id: 0,
+    commune_id: 0,
+    profession: '',
+    adresse: '',
+    reference_carte: '',
+    status_paiement: '',
+    removed: '',
+    motif_refus: '',
+    status_impression: '',
+    status_verification: '',
+  }
+
 const columns: ColumnDef<MilitantType>[] = [
   {
     header: 'Nom',
     accessorKey: 'nom',
   },
   {
-    header: 'Email',
+    header: 'Prénoms',
     accessorKey: 'prenom',
-  },
-  {
-    header: 'Email',
-    accessorKey: 'email',
   },
   {
     header: 'Telephone',
     accessorKey: 'telephone',
   },
-  {
-    header: 'Photo',
-    accessorKey: 'photo',
+   {
+    header: "Status d'impression",
+    accessorKey: "status_impression",
+    cell: ({ row }) => {
+      const value = row.getValue<string>("status_impression");
+
+      if (value === "not_printed") {
+        return <Badge variant="solid" color="error">Non imprimé</Badge>;
+      }
+      return <Badge variant="solid" color="success">Imprimé</Badge>;
+    },
   },
   {
-    header: 'Status',
-    accessorKey: 'status',
+    header: "Status de paiement",
+    accessorKey: "status_paiement",
+    cell: ({ row }) => {
+      const value = row.getValue<string>("status_paiement");
+
+      if (value === "unpaid") {
+        return (
+          <div className="flex items-center justify-center gap-2">
+            <Badge variant="solid" color="error">Impayé</Badge>
+            <Button size="sm" variant="outline" onClick={() => alert("Lancer paiement")}>
+              {/* <CreditCard className="w-4 h-4" /> */}
+              <p>Lancer paiement</p>
+            </Button>
+          </div>
+        );
+      }
+
+      return <Badge variant="solid" color="success">Payé</Badge>;
+    },
+  },
+  {
+    header: "Status de validité",
+    accessorKey: "status_verification",
+    cell: ({ row }) => {
+      const value = row.getValue<string>("status_verification");
+
+      switch (value) {
+        case "refuse":
+          return (
+            <div className="flex items-center gap-2">
+              <Badge variant="solid" color="error">Refusé</Badge>
+              <Button size="sm" variant="outline" onClick={() => alert("Corriger")}>
+                <PencilIcon className="w-4 h-4" />
+              </Button>
+            </div>
+          );
+        case "corrige":
+          return <Badge variant="solid" color="info">Corrigé</Badge>;
+        case "correct":
+          return <Badge variant="solid" color="success">Correct</Badge>;
+        case "en_cours":
+          return <Badge variant="solid" color="warning">En cours</Badge>;
+        default:
+          return <Badge variant="solid" color="dark">Inconnu</Badge>;
+      }
+    },
   },
 ];
 
@@ -78,6 +154,7 @@ const DemandeList = () => {
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
+  const [loading, setLoading] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -111,6 +188,7 @@ const DemandeList = () => {
     if (ctx) {
       ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
       const dataUrl = canvas.toDataURL("image/png");
+      setMilitant((prev)=> ({...prev, photo: dataUrl}))
       setImagePreview(dataUrl);
       stopCamera();
       setShowCamera(false);
@@ -131,40 +209,28 @@ const DemandeList = () => {
   const circonscriptions = useSelector((state: RootState)=> state.appReducer.circonscriptions)
   const communes = useSelector((state: RootState)=> state.appReducer.communes)
 
-  const [militant, setMilitant] = useState<MilitantType>({
-    id: 0,
-    nom: '',
-    prenom: '',
-    email: '',
-    telephone: '',
-    photo: '',
-    status: '',
-    user_id: 0,
-    date_inscription: '',
-    circonscription_id: 0,
-    departement_id: 0,
-    commune_id: 0,
-    reference_carte: '',
-    status_paiement: '',
-    removed: '',
-    motif_refus: '',
-    status_impression: '',
-    status_verification: '',
-  })
+  const [militant, setMilitant] = useState<MilitantType>(defaultMilitant)
 
   const validateForm = () => {
   const newErrors: {[key: string]: string} = {};
-  if (!militant.nom) newErrors.nom = "Le nom est obligatoire";
-  if (!militant.prenom) newErrors.prenom = "Le prénom est obligatoire";
-  if (!militant.email) {
-    newErrors.email = "L'email est obligatoire";
-  } else if (!/\S+@\S+\.\S+/.test(militant.email)) {
-    newErrors.email = "Email invalide";
-  }
-  if (!militant.telephone) newErrors.telephone = "Le téléphone est obligatoire";
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
-};
+    if (!militant.nom) newErrors.nom = "Le nom est obligatoire";
+    if (!militant.prenom) newErrors.prenom = "Le prénom est obligatoire";
+    if (!militant.email) {
+      newErrors.email = "L'email est obligatoire";
+    } else if (!/\S+@\S+\.\S+/.test(militant.email)) {
+      newErrors.email = "Email invalide";
+    }
+    if (!militant.telephone) newErrors.telephone = "Le téléphone est obligatoire";
+    if (!militant.adresse) newErrors.adresse = "L'adresse est obligatoire";
+    if (!militant.profession) newErrors.profession = "La profession est obligatoire";
+    if (!militant.sexe) newErrors.sexe = "Le sexe est obligatoire";
+    if (!militant.departement_id) newErrors.departement_id = "Le département est obligatoire";
+    if (!militant.circonscription_id) newErrors.circonscription_id = "La circonscription est obligatoire";
+    if (!militant.commune_id) newErrors.commune_id = "La circonscription est obligatoire";
+    if (!militant.photo) newErrors.photo = "La photo est obligatoire";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const { isOpen, openModal, closeModal } = useModal();
 
@@ -177,6 +243,7 @@ const DemandeList = () => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
+      setMilitant((prev)=> ({...prev, photo: file}))
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
       };
@@ -184,17 +251,11 @@ const DemandeList = () => {
     }
   };
 
-  const handleCameraClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    cameraInputRef.current?.click();
-  };
-
   const handleSexeChange = (value: string) => {
     setMilitant(prev => ({ ...prev, sexe: value }));
   };
 
   const handleDepartementChange = (value: string) => {
-    console.log(value);
     setMilitant(prev => ({ ...prev, departement_id: Number(value) }));
   }
 
@@ -207,13 +268,20 @@ const DemandeList = () => {
   }
   
   const handleListMilitant = async() => {
+    setLoading(true)
     const response = await getDemandes(auth.user.id, auth.token)
     if(response.success) {
       setMilitants(response.data)
+      setLoading(false)
     } else {
       toast.error('Erreur lors du chargement des demandes')
+      setLoading(false)
     }
   }
+
+  const handleContact = (value: string) => {
+    setMilitant(prev => ({ ...prev, telephone: value }));
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -229,10 +297,28 @@ const DemandeList = () => {
 
     try {
       // Ici tu peux appeler ton API
-      console.log("Données envoyées :", militant, imagePreview);
+      console.log("Données envoyées :", militant);
+      const response = await addDemande(militant, auth.token)
+
+      if (!response.success) {
+        if(response.errors) {
+          Object.keys(response.errors).forEach((key) => {
+            setErrors(prev => ({...prev, [key]: response.errors[key]}))
+          })
+        }
+        return;
+      } else {
+        setErrors({})
+        setMilitant(defaultMilitant)
+        setImagePreview(null);
+        closeModal();
+        setStream(null);
+        setShowCamera(false);
+        handleListMilitant()
+      }
 
       toast.success("Demande enregistrée avec succès !");
-      closeModal();
+      // closeModal();
     } catch (error) {
       toast.error("Erreur lors de l'enregistrement");
     }
@@ -272,7 +358,7 @@ const DemandeList = () => {
       </div>
 
       {/* Tableau des demandes Data Table */}
-      <DataTable data={militants ?? []} columns={columns} />
+      <DataTable data={militants ?? []} columns={columns} loading={loading}/>
 
       {/* Modal */}
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
@@ -338,7 +424,7 @@ const DemandeList = () => {
                       <PhoneInput
                         selectPosition="start"
                         countries={countries}
-                        onChange={handleChange}
+                        onChange={handleContact}
                       />
                       {errors.telephone && <p className="text-red-500 text-xs">{errors.telephone}</p>}
                     </div>
@@ -349,17 +435,19 @@ const DemandeList = () => {
                         Sexe
                       </label>
                       <Select
-                        options={[{value: "homme", label: "Homme"}, {value: "femme", label: "Femme"}]}
-                        placeholder="Select Option"
+                        options={[{value: "Homme", label: "Homme"}, {value: "Femme", label: "Femme"}]}
+                        placeholder="Choisissez un genre"
                         onChange={handleSexeChange}
                         className="dark:bg-dark-900"
                       />
+                      {errors.sexe && <p className="text-red-500 text-xs">{errors.sexe}</p>}
                     </div>
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">
                         Profession
                       </label>
-                      <Input type="text" placeholder="profession" />
+                      <Input type="text" name="profession" value={militant.profession} onChange={handleChange} placeholder="Profession" />
+                      {errors.profession && <p className="text-red-500 text-xs">{errors.profession}</p>}
                     </div>
                   </div>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -367,7 +455,8 @@ const DemandeList = () => {
                       <label className="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">
                         Adresse
                       </label>
-                      <Input type="text" placeholder="adresse" />
+                      <Input type="text" name="adresse" value={militant.adresse} onChange={handleChange} placeholder="Adresse" />
+                      {errors.adresse && <p className="text-red-500 text-xs">{errors.adresse}</p>}
                     </div>
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">
@@ -379,6 +468,7 @@ const DemandeList = () => {
                         onChange={handleDepartementChange}
                         className="dark:bg-dark-900"
                       />
+                      {errors.departement_id && <p className="text-red-500 text-xs">{errors.departement_id}</p>}
                     </div>
                   </div>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -398,6 +488,7 @@ const DemandeList = () => {
                         onChange={handleCirconscriptionChange}
                         className="dark:bg-dark-900"
                       />
+                      {errors.circonscription_id && <p className="text-red-500 text-xs">{errors.circonscription_id}</p>}
                     </div>
                     <div>
                       <label className="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90">
@@ -409,6 +500,7 @@ const DemandeList = () => {
                         onChange={handleCommuneChange}
                         className="dark:bg-dark-900"
                       />
+                      {errors.commune_id && <p className="text-red-500 text-xs">{errors.commune_id}</p>}
                     </div>
                   </div>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -462,7 +554,7 @@ const DemandeList = () => {
                         onChange={handleImageChange}
                       />
 
-                      
+                      {errors.photo && <p className="text-red-500 text-xs">{errors.photo}</p>}
                     </div>
                     <div>
                       {imagePreview && (
@@ -486,7 +578,7 @@ const DemandeList = () => {
               <Button size="sm" variant="outline" onClick={closeModal}>
                 Fermer
               </Button>
-              <Button size="sm" onClick={()=>console.log('save')}>
+              <Button size="sm" onClick={handleSubmit}>
                 Enregistrer
               </Button>
             </div>

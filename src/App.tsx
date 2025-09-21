@@ -28,6 +28,7 @@ import { CirconscriptionType, CommuneType, DepartementType, setCirconscriptions,
 import { useEffect, useState } from "react";
 import { getCirconscriptions, getCommunes, getDepartements } from "./api/app";
 import { useDispatch } from "react-redux";
+import { Toaster } from "react-hot-toast";
 
 export default function App() {
 
@@ -56,7 +57,8 @@ export default function App() {
   return (
     <>
       <PersistGate loading={null} persistor={persistor}>
-        <CustomToast />
+        {/* <CustomToast /> */}
+        <Toaster/>
         <Router>
           <ScrollToTop />
           <Routes>
