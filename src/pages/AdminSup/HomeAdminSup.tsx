@@ -1,9 +1,9 @@
 import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
 import StatisticsChart from "../../components/ecommerce/StatisticsChart";
 import PageMeta from "../../components/common/PageMeta";
-import StatsAgent from "../../components/Agent/StatsAgent";
+import StatsAdminSup from "../../components/AdminSup/StatsAdminSup";
 
-export default function HomeAgent() {
+export default function HomeAdminSup() {
   return (
     <>
       <PageMeta
@@ -12,7 +12,7 @@ export default function HomeAgent() {
       />
       <div className="grid grid-cols-12 gap-4 md:gap-6">
         <div className="col-span-12 ">
-          <StatsAgent />
+          <StatsAdminSup />
         </div>
 
         <div className="col-span-12">

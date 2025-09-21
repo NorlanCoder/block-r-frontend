@@ -24,6 +24,8 @@ import { PersistGate } from "redux-persist/integration/react";
 import { persistor } from "./store";
 import CustomToast from "./components/new/CustomToaster";
 import ProtectedRoute from "./components/new/ProtectedRoute";
+import HomeAdminSup from "./pages/AdminSup/HomeAdminSup";
+import PrixComponent from "./pages/AdminSup/PrixComponent";
 
 export default function App() {
   return (
@@ -45,6 +47,11 @@ export default function App() {
                 <Route path="/agent" >
                   <Route index element={<HomeAgent />} />
                   <Route path="demandes/list" element={<DemandeList />} />
+                </Route>
+
+                <Route path="/admin-sup" >
+                  <Route index element={<HomeAdminSup />} />
+                  <Route path="prix" element={<PrixComponent />} />
                 </Route>
 
                 {/* Others Page */}
