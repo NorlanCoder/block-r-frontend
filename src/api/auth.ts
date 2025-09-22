@@ -35,3 +35,48 @@ export const logoutUser = async (token: string) => {
 
     return response.json();
 };
+
+export const updateProfile = async (token: string, data: {prenom?: string, nom?: string, telephone?: string}) => {
+    const response = await fetch(`${apiUrl}profile`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+    });
+    return response.json();
+};
+
+export const getStatistique = async (token: string) => {
+    const response = await fetch(`${apiUrl}agent/statistique`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    return response.json();   
+}
+
+export const getPrix = async (token: string) => {
+    const response = await fetch(`${apiUrl}agent/statistique`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    return response.json();
+}
+
+export const updatePrix = async (token: string) => {
+    const response = await fetch(`${apiUrl}profile`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+    });
+    return response.json();
+};

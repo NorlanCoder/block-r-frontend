@@ -3,49 +3,46 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { RootState } from "../../store";
-import { updateProfile } from "../../api/auth";
+import { getPrix, updatePrix } from "../../api/auth";
 
-export default function UserMetaCard() {
+export default function Prix() {
   const { isOpen, openModal, closeModal } = useModal();
   const auth = useSelector((state: RootState) => state.authReducer);
-  const dispatch = useDispatch()
   const [loading, setLoading] = useState(false);
+  const [prix, setPrix] = useState("1000");
 
- const [formData, setFormData] = useState({
-    prenom: "",
-    nom: "",
-    telephone: "",
-  });
+    const fetchStatistique = async (token: string) => {
+        try {
+          const result = await getPrix(token)
+          // console.log(result)
+          console.log(result)
+            setPrix(result.prix);
+        } catch(error) {
+          console.log(error)
+        }
+    };
 
-  // Quand la modal s'ouvre, on copie les infos actuelles
-  useEffect(() => {
-    if (isOpen && auth.user) {
-      setFormData({
-        prenom: auth.user.prenom,
-        nom: auth.user.nom,
-        telephone: auth.user.telephone,
-      });
-    }
-  }, [isOpen, auth.user]);
+    useEffect (() => {
+        fetchStatistique(auth.token)
+    }, [auth.token]);
 
   // Gestion des changements de champs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setPrix(e.target.value);
   };
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await updateProfile(auth.token, formData);
+      const response = await updatePrix(auth.token);
       console.log("Réponse backend:", response);
 
       if (!response.user) throw new Error("Erreur de mise à jour");
 
-      dispatch({ type: "UPDATE_USER", payload: response.user });
       closeModal();
       
     } catch (error) {
@@ -60,17 +57,16 @@ export default function UserMetaCard() {
     <>
       <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
-            <div className="w-20 h-20 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800">
-              <img src="/images/user/owner.jpg" alt="user" />
+
+            <div>
+                <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
+                    Prix
+                </h4>
+                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                     {prix} FCFA
+                </p>
             </div>
-            <div className="order-3 xl:order-2">
-              <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
-                {auth.user.prenom} {auth.user.nom} 
-              </h4>
-            </div>
-            
-          </div>
+
           <button
             onClick={openModal}
             className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
@@ -94,95 +90,24 @@ export default function UserMetaCard() {
           </button>
         </div>
 
-        <div className="mt-7">
-          <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-            Information Personnelle
-          </h4>
-
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Prénom(s)
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {auth.user.prenom}
-              </p>
-            </div>
-
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Nom
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {auth.user.nom}
-              </p>
-            </div>
-
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Adress Email
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {auth.user.email}
-              </p>
-            </div>
-
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Téléphone
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {auth.user.telephone}
-              </p>
-            </div>
-
-          </div>
-        </div>
       </div>
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
         <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Modifier les informations personnelles
+              Modifier le Prix
             </h4>
-            <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Mettez à jour vos informations pour garder votre profil à jour.
-            </p>
           </div>
           <form className="flex flex-col" onSubmit={handleSave}>
-            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
+            <div className="custom-scrollbar  overflow-y-auto px-2 pb-3">
               <div className="mt-7">
-                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                  Information Personnelle
-                </h5>
-
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Prénom(s)</Label>
+                    <Label>Prix (FCFA)</Label>
                     <Input
-                      name="prenom"
+                      name="prix"
                       type="text"
-                      value={formData.prenom}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Nom</Label>
-                    <Input
-                      name="nom"
-                      type="text"
-                      value={formData.nom}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Téléphone</Label>
-                    <Input
-                      name="telephone"
-                      type="text"
-                      value={formData.telephone}
+                      value={prix}
                       onChange={handleChange}
                     />
                   </div>

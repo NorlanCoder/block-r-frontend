@@ -24,8 +24,10 @@ import { PersistGate } from "redux-persist/integration/react";
 import { persistor } from "./store";
 import CustomToast from "./components/new/CustomToaster";
 import ProtectedRoute from "./components/new/ProtectedRoute";
-import { CirconscriptionType, CommuneType, DepartementType, setCirconscriptions, setCommunes, setDepartements } from "./store/slices/appSlice";
-import { useEffect, useState } from "react";
+import HomeAdminSup from "./pages/AdminSup/HomeAdminSup";
+import PrixComponent from "./pages/AdminSup/PrixComponent";
+import { setCirconscriptions, setCommunes, setDepartements } from "./store/slices/appSlice";
+import { useEffect } from "react";
 import { getCirconscriptions, getCommunes, getDepartements } from "./api/app";
 import { useDispatch } from "react-redux";
 import { Toaster } from "react-hot-toast";
@@ -74,6 +76,11 @@ export default function App() {
                 <Route path="/agent" >
                   <Route index element={<HomeAgent />} />
                   <Route path="demandes/list" element={<DemandeList />} />
+                </Route>
+
+                <Route path="/admin-sup" >
+                  <Route index element={<HomeAdminSup />} />
+                  <Route path="prix" element={<PrixComponent />} />
                 </Route>
 
                 {/* Others Page */}

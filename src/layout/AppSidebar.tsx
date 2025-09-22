@@ -46,6 +46,11 @@ const navItems: NavItem[] = [
     path: "/",
   },
   {
+    icon: <GroupIcon />,
+    name: "Liste des administrateurs",
+    path: "/",
+  },
+  {
     name: "Liste des demandes",
     icon: <ListIcon />,
     subItems: [
@@ -56,11 +61,19 @@ const navItems: NavItem[] = [
       { name: "Corrigé", path: "/form-elements", pro: false },
     ],
   },
+
+  {
+    icon: <GroupIcon />,
+    name: "Prix",
+    path: "/admin-sup/prix",
+  },
+
   {
     icon: <UserCircleIcon />,
     name: "Profile Utilisateur",
     path: "/profile",
   },
+
   
   
   // {

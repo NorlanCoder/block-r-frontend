@@ -59,7 +59,7 @@ const DataTable = <T extends object>({ data, columns, loading = false }: DataTab
                                     <th
                                         key={header.id}
                                         onClick={header.column.getToggleSortingHandler()}
-                                        className="px-4 py-2 border cursor-pointer font-normal bg-gray-100"
+                                        className="px-4 py-2 border cursor-pointer font-normal bg-gray-100 "
                                     >
                                         {flexRender(header.column.columnDef.header, header.getContext())}
                                         {{
@@ -75,7 +75,7 @@ const DataTable = <T extends object>({ data, columns, loading = false }: DataTab
                         {table.getRowModel().rows.map(row => (
                             <tr key={row.id}>
                                 {row.getVisibleCells().map(cell => (
-                                    <td key={cell.id} className="px-4 py-2 border">
+                                    <td key={cell.id} className="px-4 py-2 border text-gray-800 dark:text-white/90">
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </td>
                                 ))}
