@@ -21,12 +21,15 @@ import SidebarWidget from "./SidebarWidget";
 import Logo1 from '../assets/logo/logo1.png'
 import Logo from '../assets/logo/logo.png'
 import LogoShort from '../assets/logo/logo-short.png'
+import { RootState } from "../store";
+import { useSelector } from "react-redux";
 
 type NavItem = {
   name: string;
   icon: React.ReactNode;
   path?: string;
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
+  role?: string[];
 };
 
 const navItems: NavItem[] = [
@@ -34,21 +37,25 @@ const navItems: NavItem[] = [
     icon: <GridIcon />,
     name: "Tableau de bord",
     path: "/",
+    role: ["admin", "superadmin", "agent"],
   },
   {
     icon: <GroupIcon />,
     name: "Liste des demandes",
     path: "/agent/demandes/list",
+    role: ["agent"],
   },
   {
     icon: <GroupIcon />,
     name: "Liste des utilisateurs",
     path: "/",
+    role: ["admin", "superadmin"],
   },
   {
     icon: <GroupIcon />,
     name: "Liste des administrateurs",
     path: "/",
+    role: ["superadmin"],
   },
   {
     name: "Liste des demandes",
@@ -60,18 +67,21 @@ const navItems: NavItem[] = [
       { name: "Impayé", path: "/form-elements", pro: false },
       { name: "Corrigé", path: "/form-elements", pro: false },
     ],
+    role: ["admin", "superadmin"],
   },
 
   {
     icon: <GroupIcon />,
     name: "Prix",
     path: "/admin-sup/prix",
+    role: ["superadmin"],
   },
 
   {
     icon: <UserCircleIcon />,
     name: "Profile Utilisateur",
     path: "/profile",
+    role: ["admin", "superadmin", "agent"],
   },
 
   
@@ -139,6 +149,7 @@ const AppSidebar: React.FC = () => {
     {}
   );
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const auth = useSelector((state: RootState) => state.authReducer);
 
   // const isActive = (path: string) => location.pathname === path;
   const isActive = useCallback(
@@ -195,9 +206,17 @@ const AppSidebar: React.FC = () => {
     });
   };
 
-  const renderMenuItems = (items: NavItem[], menuType: "main" | "others") => (
+  const renderMenuItems = (items: NavItem[], menuType: "main" | "others") => {
+  const userRole = auth?.user?.role; // rôle actuel (ex: "admin")
+
+  // On garde seulement les menus qui n'ont pas de restriction OU qui incluent ce rôle
+  const filteredItems = items.filter(
+    (nav) => !nav.role || nav.role.includes(userRole)
+  );
+
+  return (
     <ul className="flex flex-col gap-4">
-      {items.map((nav, index) => (
+      {filteredItems.map((nav, index) => (
         <li key={nav.name}>
           {nav.subItems ? (
             <button
@@ -258,6 +277,7 @@ const AppSidebar: React.FC = () => {
               </Link>
             )
           )}
+
           {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
             <div
               ref={(el) => {
@@ -317,6 +337,8 @@ const AppSidebar: React.FC = () => {
       ))}
     </ul>
   );
+};
+
 
   return (
     <aside
