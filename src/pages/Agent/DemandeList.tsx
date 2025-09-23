@@ -4,7 +4,7 @@ import Button from "../../components/ui/button/Button";
 import { PencilIcon, PlusIcon } from "../../icons";
 import { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../../components/new/DataTable";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { addDemande, getDemandes } from "../../api/agent";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
@@ -15,6 +15,7 @@ import Input from "../../components/form/input/InputField";
 import Select from "../../components/form/Select";
 import PhoneInput from "../../components/form/group-input/PhoneInput";
 import Badge from "../../components/ui/badge/Badge";
+import { FedaCheckoutButton, FedaCheckoutContainer } from 'fedapay-reactjs';
 
 interface MilitantType {
   id: number;
@@ -99,10 +100,7 @@ const columns: ColumnDef<MilitantType>[] = [
         return (
           <div className="flex items-center justify-center gap-2">
             <Badge variant="solid" color="error">Impayé</Badge>
-            <Button size="sm" variant="outline" onClick={() => alert("Lancer paiement")}>
-              {/* <CreditCard className="w-4 h-4" /> */}
-              <p>Lancer paiement</p>
-            </Button>
+            <PaymentButton price={1000} militantId={row.original.id} />
           </div>
         );
       }
@@ -148,15 +146,65 @@ const countries = [
   { code: "TG", label: "+228" },
 ];
 
+const PaymentButton = ({price, militantId}: {price: number, militantId: number}) => {
+    const checkoutButtonOptions = useMemo(() => ({
+      public_key: 'pk_live_OA-zYNRAIADYmLTLeoUC5x2W',
+      transaction: {
+        amount: price,
+        description: 'Paiement de la demande',
+        metadata: { id: militantId },
+        callback_url: "http://localhost:3000"
+      },
+      currency: {
+        iso: "XOF"
+      },
+      button: {
+        class: 'btn btn-primary',
+        text: `Payer`
+      },
+      onComplete(resp) {
+        // if (resp.reason === (window as any).FedaPay.DIALOG_DISMISSED) {
+        //   alert("Paiement annulé");
+        // } else {
+        //   alert("Transaction terminée : " + resp.reason);
+        // }
+        console.log(resp.transaction);
+
+        // ✅ Supprimer toutes les iframes FedaPay
+        document.querySelectorAll("iframe[src*='fedapay']").forEach((iframe) => iframe.remove());
+
+        // ✅ Supprimer tous les overlays / loaders FedaPay
+        document.querySelectorAll("div, section").forEach((el) => {
+          const html = el.outerHTML.toLowerCase();
+          if (
+            html.includes("fedapay") ||
+            html.includes("loader") ||
+            (el as HTMLElement).style?.zIndex === "9999" // souvent utilisé par FedaPay
+          ) {
+            if (el.tagName !== "BODY" && el.tagName !== "HTML") {
+              el.remove();
+            }
+          }
+        });
+      }
+    }), [price, militantId]);
+
+    return (
+        <FedaCheckoutButton options={checkoutButtonOptions} style={{ padding: "6px 10px", display: "flex", justifyContent: "center", alignItems: "center", color: "white", backgroundColor: "#7EA045", borderRadius: "40px" }} />
+    );
+};
+
 const DemandeList = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+
 
   // Ouvrir la caméra
   const openCameraStream = async (e: React.MouseEvent) => {
