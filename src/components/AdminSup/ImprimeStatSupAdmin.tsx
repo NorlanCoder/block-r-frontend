@@ -6,7 +6,7 @@ import { MoreDotIcon } from "../../icons";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
-import { getAgentStatistique } from "../../api/auth";
+import { getSupAdminStatistique } from "../../api/auth";
 
 interface StatDepartementAttribute {
   graphique1: Array<number>;
@@ -16,14 +16,14 @@ const initialState: StatDepartementAttribute = {
   graphique1: [],
 };
 
-export default function MonthlySalesChart() {
+export default function ImprimeStatSupAdmin() {
 
   const auth = useSelector((state: RootState) => state.authReducer);
   const [data, setData] = useState<StatDepartementAttribute>(initialState);
 
   const fetchStatistique = async (token: string) => {
       try {
-        const result = await getAgentStatistique(token)
+        const result = await getSupAdminStatistique(token)
         console.log(result)
         // console.log("Contenue de data", data)
         setData({

@@ -4,7 +4,7 @@ import {
   GroupIcon,
 } from "../../icons";
 import { RootState } from "../../store";
-import { getStatistique } from "../../api/auth";
+import { getAgentStatistique } from "../../api/auth";
 import { useEffect, useState } from "react";
 
 interface StatistiqueAttribute {
@@ -32,7 +32,7 @@ export default function EcommerceMetrics() {
 
   const fetchStatistique = async (token: string) => {
     try {
-      const result = await getStatistique(token)
+      const result = await getAgentStatistique(token)
       // console.log(result)
       setData({
         militantFemme: result.militantFemme ? result.militantFemme.length : 0,
@@ -52,9 +52,9 @@ export default function EcommerceMetrics() {
     fetchStatistique(auth.token)
   }, [auth.token]);
 
-  useEffect (() => {
-    console.log(data)
-  }, [data]);
+  // useEffect (() => {
+  //   console.log(data)
+  // }, [data]);
 
 
   return (

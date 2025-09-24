@@ -1,7 +1,7 @@
-import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
-import StatisticsChart from "../../components/ecommerce/StatisticsChart";
 import PageMeta from "../../components/common/PageMeta";
 import StatsAdminSup from "../../components/AdminSup/StatsAdminSup";
+import DepartementChartSupAdmin from "../../components/AdminSup/DepartementChartSupAdmin";
+import ImprimeStatSupAdmin from "../../components/AdminSup/ImprimeStatSupAdmin";
 
 export default function HomeAdminSup() {
   return (
@@ -16,11 +16,11 @@ export default function HomeAdminSup() {
         </div>
 
         <div className="col-span-12">
-          <MonthlySalesChart />
+          <DepartementChartSupAdmin />
         </div>
 
         <div className="col-span-12">
-          <StatisticsChart />
+          <ImprimeStatSupAdmin />
         </div>
 
       </div>
