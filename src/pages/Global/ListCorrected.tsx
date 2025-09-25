@@ -155,7 +155,7 @@ const ListCorrected = () => {
     setLoading(true)
     const response = await getDemandesCorrigee(auth.token)
     if(response.success) {
-      setMilitants(response.data)
+      setMilitants(response.militants)
       setLoading(false)
     } else {
       toast.error('Erreur lors du chargement des demandes')

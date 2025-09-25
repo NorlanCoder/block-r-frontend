@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 import { Modal } from "../../components/ui/modal";
 import { useModal } from "../../hooks/useModal";
 import Badge from "../../components/ui/badge/Badge";
-import { getDemandes } from "../../api/supAdmin";
+import { getDemandes, getDemandesRefusees } from "../../api/supAdmin";
 
 interface MilitantType {
   id: number;
@@ -153,9 +153,9 @@ const ListRefused = () => {
   
   const handleListMilitant = async() => {
     setLoading(true)
-    const response = await getDemandes(auth.token)
+    const response = await getDemandesRefusees(auth.token)
     if(response.success) {
-      setMilitants(response.data)
+      setMilitants(response.militants)
       setLoading(false)
     } else {
       toast.error('Erreur lors du chargement des demandes')

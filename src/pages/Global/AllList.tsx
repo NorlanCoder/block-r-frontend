@@ -1,7 +1,7 @@
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import Button from "../../components/ui/button/Button";
-import { PencilIcon, PlusIcon } from "../../icons";
+import {  PencilIcon } from "../../icons";
 import { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../../components/new/DataTable";
 import { useEffect, useState } from "react";
@@ -12,6 +12,8 @@ import { Modal } from "../../components/ui/modal";
 import { useModal } from "../../hooks/useModal";
 import Badge from "../../components/ui/badge/Badge";
 import { getDemandes } from "../../api/supAdmin";
+import { FaCheckDouble, FaEye } from "react-icons/fa";
+import CardPreview from "../../components/Agent/CardPreview";
 
 interface MilitantType {
   id: number;
@@ -37,131 +39,159 @@ interface MilitantType {
   status_verification: string;
 }
 
-const defaultMilitant = {
-    id: 0,
-    nom: '',
-    prenom: '',
-    email: '',
-    telephone: '',
-    photo: null as File | null,
-    sexe: '',
-    status: '',
-    user_id: 0,
-    date_inscription: '',
-    circonscription_id: 0,
-    departement_id: 0,
-    commune_id: 0,
-    profession: '',
-    adresse: '',
-    reference_carte: '',
-    status_paiement: '',
-    removed: '',
-    motif_refus: '',
-    status_impression: '',
-    status_verification: '',
-  }
 
-const columns: ColumnDef<MilitantType>[] = [
-  {
-    header: 'Nom',
-    accessorKey: 'nom',
-  },
-  {
-    header: 'Prénoms',
-    accessorKey: 'prenom',
-  },
-  {
-    header: 'Telephone',
-    accessorKey: 'telephone',
-  },
-   {
-    header: "Status d'impression",
-    accessorKey: "status_impression",
-    cell: ({ row }) => {
-      const value = row.getValue<string>("status_impression");
 
-      if (value === "not_printed") {
-        return <Badge variant="solid" color="error">Non imprimé</Badge>;
-      }
-      return <Badge variant="solid" color="success">Imprimé</Badge>;
-    },
-  },
-  {
-    header: "Status de paiement",
-    accessorKey: "status_paiement",
-    cell: ({ row }) => {
-      const value = row.getValue<string>("status_paiement");
-
-      if (value === "unpaid") {
-        return (
-          <div className="flex items-center justify-center gap-2">
-            <Badge variant="solid" color="error">Impayé</Badge>
-            <Button size="sm" variant="outline" onClick={() => alert("Lancer paiement")}>
-              {/* <CreditCard className="w-4 h-4" /> */}
-              <p>Lancer paiement</p>
-            </Button>
-          </div>
-        );
-      }
-
-      return <Badge variant="solid" color="success">Payé</Badge>;
-    },
-  },
-  {
-    header: "Status de validité",
-    accessorKey: "status_verification",
-    cell: ({ row }) => {
-      const value = row.getValue<string>("status_verification");
-
-      switch (value) {
-        case "refuse":
-          return (
-            <div className="flex items-center gap-2">
-              <Badge variant="solid" color="error">Refusé</Badge>
-              <Button size="sm" variant="outline" onClick={() => alert("Corriger")}>
-                <PencilIcon className="w-4 h-4" />
-              </Button>
-            </div>
-          );
-        case "corrige":
-          return <Badge variant="solid" color="info">Corrigé</Badge>;
-        case "correct":
-          return <Badge variant="solid" color="success">Correct</Badge>;
-        case "en_cours":
-          return <Badge variant="solid" color="warning">En cours</Badge>;
-        default:
-          return <Badge variant="solid" color="dark">Inconnu</Badge>;
-      }
-    },
-  },
-];
-
-const countries = [
-  { code: "BJ", label: "+229" },
-  { code: "US", label: "+1" },
-  { code: "GB", label: "+44" },
-  { code: "CA", label: "+1" },
-  { code: "AU", label: "+61" },
-  { code: "TG", label: "+228" },
-];
 
 const AllList = () => {
 
   const [loading, setLoading] = useState(false);
   const [militants, setMilitants] = useState<MilitantType[]|[]>([])
   const auth = useSelector((state: RootState)=> state.authReducer)
+  const [selectedMilitant, setSelectedMilitant] = useState<MilitantType | null>(null);
+  const { isOpen: isPreviewOpen, openModal: openPreview, closeModal: closePreview } = useModal();
+  const { isOpen: isConfirmOpen, openModal: openConfirm, closeModal: closeConfirm } = useModal();
+
+  const handlePreview = (militant: MilitantType) => {
+    setSelectedMilitant(militant);
+    openPreview();
+  };
+
+  const handleReject = (militant: MilitantType) => {
+    setSelectedMilitant(militant);
+    openConfirm();
+  };
   
   const handleListMilitant = async() => {
     setLoading(true)
     const response = await getDemandes(auth.token)
     if(response.success) {
-      setMilitants(response.data)
+      setMilitants(response.militants)
       setLoading(false)
     } else {
       toast.error('Erreur lors du chargement des demandes')
       setLoading(false)
     }
   }
+
+  const columns: ColumnDef<MilitantType>[] = [
+    {
+        header: 'Nom',
+        accessorKey: 'nom',
+    },
+    {
+        header: 'Prénoms',
+        accessorKey: 'prenom',
+    },
+    {
+        header: 'Telephone',
+        accessorKey: 'telephone',
+    },
+    {
+        header: "Status d'impression",
+        accessorKey: "status_impression",
+        cell: ({ row }) => {
+        const value = row.getValue<string>("status_impression");
+
+        if (value === "not_printed") {
+            return (
+                <div className="flex items-center justify-center gap-2">
+                    <Badge variant="solid" color="error">Non imprimé</Badge>
+                    <Button size="sm" variant="outline" onClick={() => alert("Imprimer")}>
+                        {/* <CreditCard className="w-4 h-4" /> */}
+                        <p>Imprimer</p>
+                    </Button>
+                </div>
+            )
+        }
+        return (
+            <div className="flex items-center justify-center gap-2">
+            <Badge variant="solid" color="success">Imprimé</Badge>
+            </div>
+        )
+        },
+    },
+    {
+        header: "Status de paiement",
+        accessorKey: "status_paiement",
+        cell: ({ row }) => {
+        const value = row.getValue<string>("status_paiement");
+
+        if (value === "unpaid") {
+            return (
+            <div className="flex items-center justify-center gap-2">
+                <Badge variant="solid" color="error">Impayé</Badge>
+            </div>
+            );
+        }
+
+        return (
+            <div className="flex items-center justify-center gap-2">
+            <Badge variant="solid" color="success">Payé</Badge>
+            </div>
+        )
+        },
+    },
+    {
+        header: "Status de validité",
+        accessorKey: "status_verification",
+        cell: ({ row }) => {
+        const value = row.getValue<string>("status_verification");
+        const militant = row.original;
+        switch (value) {
+            case "refuse":
+            return (
+                <div className="flex items-center gap-2">
+                    <Badge variant="solid" color="error">Refusé</Badge>
+                </div>
+            );
+            case "corrige":
+            return (
+                <div className="flex items-center gap-2">
+                    <Badge variant="solid" color="info">Corrigé</Badge>
+                    <Button size="sm" variant="outline" onClick={() => alert("Corriger")}>
+                        <FaCheckDouble className="w-4 h-4" />
+                    </Button>
+                </div>
+            )
+            case "correct":
+            return (
+                <div className="flex items-center gap-2">
+                    <Badge variant="solid" color="success">Correct</Badge>
+                    <Button size="sm" variant="outline" onClick={() => handleReject(militant)}>
+                        <PencilIcon className="w-4 h-4" />
+                    </Button>
+                </div>
+            )
+            case "en_cours":
+            return (
+                <div className="flex items-center gap-2">
+                    <Badge variant="solid" color="warning">En cours</Badge>
+                    <Button size="sm" variant="outline" onClick={() => handleReject(militant)}>
+                        <PencilIcon className="w-4 h-4" />
+                    </Button>
+                </div>
+            )
+            default:
+            return <Badge variant="solid" color="dark">Inconnu</Badge>;
+        }
+        }
+        
+    },
+    {
+        header: "Actions",
+        accessorKey: "nom",
+        cell: ({ row }) => {
+            const militant = row.original;
+            return (
+                <div className="flex items-center">
+                    <Button size="sm" variant="outline" onClick={() => handlePreview(militant)}>
+                        <FaEye className="w-4 h-4" />
+                    </Button>
+                </div>
+            )
+        }
+    }
+];
 
   useEffect(()=>{
     handleListMilitant()
@@ -176,7 +206,7 @@ const AllList = () => {
       <PageBreadcrumb pageTitle="Liste des demandes" />
       <div className="rounded-2xl  w-full flex flex-row justify-between items-center bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Liste des demandes refusées
+          Liste des demandes
         </h3>
         {/* <Button variant="primary" onClick={openModal}>
           <PlusIcon />
@@ -186,6 +216,37 @@ const AllList = () => {
 
       {/* Tableau des demandes Data Table */}
       <DataTable data={militants ?? []} columns={columns} loading={loading}/>
+      {/* Modal Preview */}
+        <Modal isOpen={isPreviewOpen} onClose={closePreview} className="max-w-[700px] m-4">
+            {selectedMilitant && <CardPreview militant={selectedMilitant} />}
+        </Modal>
+
+        <Modal isOpen={isConfirmOpen} onClose={closeConfirm} className="max-w-[700px] m-4">
+        {selectedMilitant && (
+            <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
+                <div className="flex flex-col gap-4">
+                    <p>
+                        Voulez-vous vraiment rejeter la demande de{" "}
+                        <span className="font-semibold">{selectedMilitant.nom} {selectedMilitant.prenom}</span> ?
+                    </p>
+                    <label htmlFor="">Raison du rejet</label>
+                    <textarea
+                        placeholder="Ajouter une note de confirmation..."
+                        className="w-full border rounded-md p-2 text-sm"
+                    />
+                    <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={closeConfirm}>
+                            Annuler
+                        </Button>
+                        <Button variant="primary" onClick={() => alert("Demande rejetée !")}>
+                            Confirmer le rejet
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        )}
+        </Modal>
+
 
     </>
   )

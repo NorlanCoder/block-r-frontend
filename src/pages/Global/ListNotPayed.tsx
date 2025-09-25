@@ -37,29 +37,6 @@ interface MilitantType {
   status_verification: string;
 }
 
-const defaultMilitant = {
-    id: 0,
-    nom: '',
-    prenom: '',
-    email: '',
-    telephone: '',
-    photo: null as File | null,
-    sexe: '',
-    status: '',
-    user_id: 0,
-    date_inscription: '',
-    circonscription_id: 0,
-    departement_id: 0,
-    commune_id: 0,
-    profession: '',
-    adresse: '',
-    reference_carte: '',
-    status_paiement: '',
-    removed: '',
-    motif_refus: '',
-    status_impression: '',
-    status_verification: '',
-  }
 
 const columns: ColumnDef<MilitantType>[] = [
   {
@@ -155,7 +132,7 @@ const ListNotPayed = () => {
     setLoading(true)
     const response = await getDemandesNonPayer(auth.token)
     if(response.success) {
-      setMilitants(response.data)
+      setMilitants(response.militants)
       setLoading(false)
     } else {
       toast.error('Erreur lors du chargement des demandes')
