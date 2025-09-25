@@ -16,11 +16,11 @@ export default function HomeAdminSup() {
         </div>
 
         <div className="col-span-12">
-          <DepartementChartSupAdmin />
+          <ImprimeStatSupAdmin />
         </div>
 
         <div className="col-span-12">
-          <ImprimeStatSupAdmin />
+          <DepartementChartSupAdmin />
         </div>
 
       </div>

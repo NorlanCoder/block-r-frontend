@@ -44,7 +44,10 @@ export default function SignInForm() {
     setLoading(true);
     try {
       const response = await login(email, password);
-      if(!response.user) toast.error("Identifiants invalides. Veuillez réessayer.");
+      if(!response.user) {
+        if(response.code == "nonoctive") toast.error("Votre compte a été restreint. Veuillez réessayer.");
+        else toast.error("Identifiants invalides. Veuillez réessayer.");
+      }
       else {
         dispatch(loginauth({token: response.access_token, user: response.user}));
         toast.success("Connexion reussie.")

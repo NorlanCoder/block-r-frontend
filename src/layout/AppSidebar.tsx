@@ -37,7 +37,7 @@ const navItems: NavItem[] = [
     icon: <GridIcon />,
     name: "Tableau de bord",
     path: "/",
-    role: ["admin", "superadmin", "agent"],
+    role: ["admin", "super_admin", "agent"],
   },
   {
     icon: <GroupIcon />,
@@ -48,40 +48,42 @@ const navItems: NavItem[] = [
   {
     icon: <GroupIcon />,
     name: "Liste des utilisateurs",
-    path: "/",
-    role: ["admin", "superadmin"],
+    path: "/admin/utilisateurs",
+    role: ["admin", "super_admin"],
   },
   {
     icon: <GroupIcon />,
     name: "Liste des administrateurs",
-    path: "/",
-    role: ["superadmin"],
+    path: "/super-admin/admin/list",
+    role: ["super_admin"],
   },
   {
     name: "Liste des demandes",
     icon: <ListIcon />,
     subItems: [
-      { name: "Imprimé", path: "/form-elements", pro: false },
-      { name: "Non imprimé", path: "/form-elements", pro: false },
-      { name: "Payé", path: "/form-elements", pro: false },
-      { name: "Impayé", path: "/form-elements", pro: false },
-      { name: "Corrigé", path: "/form-elements", pro: false },
+      { name: "Tout", path: "/admin/demande/list", pro: false },
+      { name: "Imprimé", path: "/admin/demande/imprimer", pro: false },
+      { name: "Non imprimé", path: "/admin/demande/non-imprimer", pro: false },
+      { name: "Payé", path: "/admin/demande/payer", pro: false },
+      { name: "Impayé", path: "/admin/demande/impayer", pro: false },
+      { name: "Corrigé", path: "/admin/demande/corriger", pro: false },
+      { name: "Refusé", path: "/admin/demande/refuser", pro: false },
     ],
-    role: ["admin", "superadmin"],
+    role: ["admin", "super_admin"],
   },
 
   {
     icon: <GroupIcon />,
     name: "Prix",
     path: "/admin-sup/prix",
-    role: ["superadmin"],
+    role: ["super_admin"],
   },
 
   {
     icon: <UserCircleIcon />,
     name: "Profile Utilisateur",
     path: "/profile",
-    role: ["admin", "superadmin", "agent"],
+    role: ["admin", "super_admin", "agent"],
   },
 
   

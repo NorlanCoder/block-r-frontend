@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { RootState } from "../../store";
 import { updateProfile } from "../../api/auth";
+import { updateUser } from "../../store/slices/authSlice";
 
 export default function UserMetaCard() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -45,7 +46,7 @@ export default function UserMetaCard() {
 
       if (!response.user) throw new Error("Erreur de mise à jour");
 
-      dispatch({ type: "UPDATE_USER", payload: response.user });
+      dispatch(updateUser({nom: formData.nom, prenom: formData.prenom, telephone: formData.telephone}))
       closeModal();
       
     } catch (error) {
@@ -62,7 +63,7 @@ export default function UserMetaCard() {
         <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
             <div className="w-20 h-20 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800">
-              <img src="/images/user/owner.jpg" alt="user" />
+              <img src="https://img.freepik.com/vecteurs-libre/cercle-bleu-utilisateur-blanc_78370-4707.jpg?semt=ais_hybrid&w=740&q=80" alt="user" />
             </div>
             <div className="order-3 xl:order-2">
               <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">

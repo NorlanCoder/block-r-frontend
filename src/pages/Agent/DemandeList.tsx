@@ -15,7 +15,9 @@ import Input from "../../components/form/input/InputField";
 import Select from "../../components/form/Select";
 import PhoneInput from "../../components/form/group-input/PhoneInput";
 import Badge from "../../components/ui/badge/Badge";
-import { FedaCheckoutButton, FedaCheckoutContainer } from 'fedapay-reactjs';
+import { FedaCheckoutButton } from 'fedapay-reactjs';
+import { User } from "../../store/slices/authSlice";
+import { apiUrl } from "../../api";
 
 interface MilitantType {
   id: number;
@@ -85,9 +87,17 @@ const columns: ColumnDef<MilitantType>[] = [
       const value = row.getValue<string>("status_impression");
 
       if (value === "not_printed") {
-        return <Badge variant="solid" color="error">Non imprimé</Badge>;
+        return (
+          <div className="flex items-center justify-center gap-2">
+            <Badge variant="solid" color="error">Non imprimé</Badge>
+          </div>
+        )
       }
-      return <Badge variant="solid" color="success">Imprimé</Badge>;
+      return (
+        <div className="flex items-center justify-center gap-2">
+          <Badge variant="solid" color="success">Imprimé</Badge>
+        </div>
+      )
     },
   },
   {
@@ -100,12 +110,16 @@ const columns: ColumnDef<MilitantType>[] = [
         return (
           <div className="flex items-center justify-center gap-2">
             <Badge variant="solid" color="error">Impayé</Badge>
-            <PaymentButton price={1000} militantId={row.original.id} />
+            <PaymentButton price={1000} militantId={row.original.id} user={useSelector((state: RootState) => state.authReducer.user)} />
           </div>
         );
       }
 
-      return <Badge variant="solid" color="success">Payé</Badge>;
+      return (
+        <div className="flex items-center justify-center gap-2">
+          <Badge variant="solid" color="success">Payé</Badge>
+        </div>
+      );
     },
   },
   {
@@ -117,7 +131,7 @@ const columns: ColumnDef<MilitantType>[] = [
       switch (value) {
         case "refuse":
           return (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
               <Badge variant="solid" color="error">Refusé</Badge>
               <Button size="sm" variant="outline" onClick={() => alert("Corriger")}>
                 <PencilIcon className="w-4 h-4" />
@@ -125,13 +139,29 @@ const columns: ColumnDef<MilitantType>[] = [
             </div>
           );
         case "corrige":
-          return <Badge variant="solid" color="info">Corrigé</Badge>;
+          return (
+            <div className="flex items-center justify-center gap-2">
+              <Badge variant="solid" color="info">Corrigé</Badge>
+            </div>
+          );
         case "correct":
-          return <Badge variant="solid" color="success">Correct</Badge>;
+          return (
+            <div className="flex items-center justify-center gap-2">
+              <Badge variant="solid" color="success">Correct</Badge>
+            </div>
+          )
         case "en_cours":
-          return <Badge variant="solid" color="warning">En cours</Badge>;
+          return (
+            <div className="flex items-center justify-center gap-2">
+              <Badge variant="solid" color="warning">En cours</Badge>
+            </div>
+          )
         default:
-          return <Badge variant="solid" color="dark">Inconnu</Badge>;
+          return (
+            <div className="flex items-center justify-center gap-2">
+              <Badge variant="solid" color="dark">Inconnu</Badge>
+            </div>
+          )
       }
     },
   },
@@ -146,21 +176,26 @@ const countries = [
   { code: "TG", label: "+228" },
 ];
 
-const PaymentButton = ({price, militantId}: {price: number, militantId: number}) => {
+const PaymentButton = ({price, militantId, user}: {price: number, militantId: number, user: User}) => {
     const checkoutButtonOptions = useMemo(() => ({
-      public_key: 'pk_live_OA-zYNRAIADYmLTLeoUC5x2W',
+      public_key: 'pk_sandbox_Zl7Ctv4LvFJOHV33oqNtr-ja',
       transaction: {
         amount: price,
         description: 'Paiement de la demande',
         metadata: { id: militantId },
         callback_url: "http://localhost:3000"
       },
+      customer: {
+        email: user.email,
+        first_name: user.prenom,
+        last_name: user.nom
+      },
       currency: {
         iso: "XOF"
       },
       button: {
         class: 'btn btn-primary',
-        text: `Payer`
+        text: `Payer la demande`
       },
       onComplete(resp) {
         // if (resp.reason === (window as any).FedaPay.DIALOG_DISMISSED) {
@@ -168,8 +203,7 @@ const PaymentButton = ({price, militantId}: {price: number, militantId: number})
         // } else {
         //   alert("Transaction terminée : " + resp.reason);
         // }
-        console.log(resp.transaction);
-
+        
         // ✅ Supprimer toutes les iframes FedaPay
         document.querySelectorAll("iframe[src*='fedapay']").forEach((iframe) => iframe.remove());
 
@@ -186,11 +220,29 @@ const PaymentButton = ({price, militantId}: {price: number, militantId: number})
             }
           }
         });
+
+        if (resp.reason === "CHECKOUT COMPLETE") {
+          // alert("Transaction terminée : " + resp.reason);
+          fetch(`${apiUrl}paiement/callback?id=${resp.transaction.id}&reference=${resp.transaction.reference}&status=${resp.transaction.status}&militant_id=${militantId}&prix=${price}`, 
+          {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"}
+          }).then(res=>res.json())
+          .then(res=> {
+            if (res.success) {
+              toast.success("Paiement éffectué avec succès !");
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
+            }
+          })
+        }
+
       }
     }), [price, militantId]);
 
     return (
-        <FedaCheckoutButton options={checkoutButtonOptions} style={{ padding: "6px 10px", display: "flex", justifyContent: "center", alignItems: "center", color: "white", backgroundColor: "#7EA045", borderRadius: "40px" }} />
+        <FedaCheckoutButton options={checkoutButtonOptions} style={{ padding: "3px 10px", display: "flex", justifyContent: "center", alignItems: "center", color: "white", backgroundColor: "#7EA045", borderRadius: "40px", fontSize: "14px" }} />
     );
 };
 
@@ -200,7 +252,6 @@ const DemandeList = () => {
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -243,6 +294,19 @@ const DemandeList = () => {
     }
   };
 
+  // const paiementCallback = async({militant_id,id,reference,status,prix}: {militant_id: number, id: number, reference: string, status: string, prix: number}) => {
+  //   await fetch(`${apiUrl}paiement/callback?id=${id}&reference=${reference}&status=${status}?militant_id=${militant_id}&prix=${prix}`, 
+  //     {
+  //       method: "PUT",
+  //       headers: {"Content-Type": "application/json"}
+  //     }).then(res=>res.json())
+  //     .then(res=> {
+  //       if (res.success) {
+  //         toast.success("Paiement éffectué avec succès !");
+  //       }
+  //     })
+  // }
+
   // Fermer caméra (nettoyage)
   const stopCamera = () => {
     stream?.getTracks().forEach((track) => track.stop());
@@ -251,7 +315,6 @@ const DemandeList = () => {
 
   const [militants, setMilitants] = useState<MilitantType[]|[]>([])
   const [errors, setErrors] = useState<{[key: string]: string}>({});
-  const [onEdit, setOnEdit] = useState(false)
   const auth = useSelector((state: RootState)=> state.authReducer)
   const departements = useSelector((state: RootState)=> state.appReducer.departements)
   const circonscriptions = useSelector((state: RootState)=> state.appReducer.circonscriptions)
@@ -345,7 +408,7 @@ const DemandeList = () => {
 
     try {
       // Ici tu peux appeler ton API
-      console.log("Données envoyées :", militant);
+      // console.log("Données envoyées :", militant);
       const response = await addDemande(militant, auth.token)
 
       if (!response.success) {

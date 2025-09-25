@@ -59,7 +59,9 @@ export const authSlice = createSlice({
     updateUser: (state, action) => {
       state.user = {
         ...state.user,
-        ...action.payload,
+        telephone: action.payload.telephone,
+        nom: action.payload.nom,
+        prenom: action.payload.prenom
       };
     }
   },
