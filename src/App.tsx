@@ -31,6 +31,7 @@ import { useEffect } from "react";
 import { getCirconscriptions, getCommunes, getDepartements } from "./api/app";
 import { useDispatch } from "react-redux";
 import { Toaster } from "react-hot-toast";
+import HomeAdmin from "./pages/Admin/HomeAdmin";
 
 export default function App() {
 
@@ -78,9 +79,13 @@ export default function App() {
                   <Route path="demandes/list" element={<DemandeList />} />
                 </Route>
 
-                <Route path="/admin-sup" >
+                <Route path="/admin-sup >
                   <Route index element={<HomeAdminSup />} />
                   <Route path="prix" element={<PrixComponent />} />
+                </Route>
+
+                <Route path="/admin" >
+                  <Route index element={<HomeAdmin />} />
                 </Route>
 
                 {/* Others Page */}

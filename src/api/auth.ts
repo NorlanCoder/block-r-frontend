@@ -48,7 +48,7 @@ export const updateProfile = async (token: string, data: {prenom?: string, nom?:
     return response.json();
 };
 
-export const getStatistique = async (token: string) => {
+export const getAgentStatistique = async (token: string) => {
     const response = await fetch(`${apiUrl}agent/statistique`, {
         method: 'GET',
         headers: {
@@ -80,3 +80,25 @@ export const updatePrix = async (token: string) => {
     });
     return response.json();
 };
+
+export const getAdminStatistique = async (token: string) => {
+    const response = await fetch(`${apiUrl}admin/statistique`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    return response.json();   
+}
+
+export const getSupAdminStatistique = async (token: string) => {
+    const response = await fetch(`${apiUrl}super-admin/statistique`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+    return response.json();   
+}

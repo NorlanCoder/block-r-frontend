@@ -1,10 +1,11 @@
-import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
-import StatisticsChart from "../../components/ecommerce/StatisticsChart";
+
 
 import PageMeta from "../../components/common/PageMeta";
 import StatsAdmin from "../../components/Admin/StatsAdmin";
+import DepartementChartAdmin from "../../components/Admin/DepartementChartAdmin";
+import ImprimeStatAdmin from "../../components/Admin/ImprimeStatAdmin";
 
-export default function Home() {
+export default function HomeAdmin() {
   return (
     <>
       <PageMeta
@@ -17,11 +18,11 @@ export default function Home() {
         </div>
 
         <div className="col-span-12">
-          <MonthlySalesChart />
+          <DepartementChartAdmin />
         </div>
 
         <div className="col-span-12">
-          <StatisticsChart />
+          <ImprimeStatAdmin />
         </div>
 
       </div>

@@ -1,6 +1,5 @@
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-import ChartTab from "../common/ChartTab";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { useEffect, useState } from "react";
@@ -20,7 +19,7 @@ const initialState: StatAttribute = {
   },
 };
 
-export default function StatisticsChart() {
+export default function DepartementChartAgent() {
 
   const auth = useSelector((state: RootState) => state.authReducer);
   const [data, setData] = useState<StatAttribute>(initialState);

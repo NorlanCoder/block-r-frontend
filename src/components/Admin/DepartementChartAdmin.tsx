@@ -3,9 +3,41 @@ import { ApexOptions } from "apexcharts";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { MoreDotIcon } from "../../icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
+import { getAdminStatistique } from "../../api/auth";
 
-export default function MonthlySalesChart() {
+interface StatDepartementAttribute {
+  graphique1: Array<number>;
+} 
+
+const initialState: StatDepartementAttribute = {
+  graphique1: [],
+};
+
+export default function DepartementChartAdmin() {
+
+  const auth = useSelector((state: RootState) => state.authReducer);
+  const [data, setData] = useState<StatDepartementAttribute>(initialState);
+
+  const fetchStatistique = async (token: string) => {
+      try {
+        const result = await getAdminStatistique(token)
+        console.log(result)
+        // console.log("Contenue de data", data)
+        setData({
+          graphique1: result.graphique1 ? result.graphique1 : [],
+        })
+      } catch(error) {
+        console.log(error)
+      }
+    };
+
+  useEffect (() => {
+      fetchStatistique(auth.token)
+    }, [auth.token]);
+
   const options: ApexOptions = {
     colors: ["#7EA045"],
     chart: {
@@ -88,7 +120,7 @@ export default function MonthlySalesChart() {
   const series = [
     {
       name: "Demandes",
-      data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
+      data: data.graphique1 ? data.graphique1 : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
   ];
   const [isOpen, setIsOpen] = useState(false);
