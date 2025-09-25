@@ -1,16 +1,17 @@
-
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import Button from "../../components/ui/button/Button";
-import { PencilIcon } from "../../icons";
+import { PencilIcon, PlusIcon } from "../../icons";
 import { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../../components/new/DataTable";
 import { useEffect, useState } from "react";
-import { getDemandes } from "../../api/agent";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import toast from "react-hot-toast";
+import { Modal } from "../../components/ui/modal";
+import { useModal } from "../../hooks/useModal";
 import Badge from "../../components/ui/badge/Badge";
+import { getDemandesNonPayer, getDemandesPayer } from "../../api/supAdmin";
 
 interface MilitantType {
   id: number;
@@ -35,6 +36,30 @@ interface MilitantType {
   status_impression: string;
   status_verification: string;
 }
+
+const defaultMilitant = {
+    id: 0,
+    nom: '',
+    prenom: '',
+    email: '',
+    telephone: '',
+    photo: null as File | null,
+    sexe: '',
+    status: '',
+    user_id: 0,
+    date_inscription: '',
+    circonscription_id: 0,
+    departement_id: 0,
+    commune_id: 0,
+    profession: '',
+    adresse: '',
+    reference_carte: '',
+    status_paiement: '',
+    removed: '',
+    motif_refus: '',
+    status_impression: '',
+    status_verification: '',
+  }
 
 const columns: ColumnDef<MilitantType>[] = [
   {
@@ -111,16 +136,24 @@ const columns: ColumnDef<MilitantType>[] = [
   },
 ];
 
+const countries = [
+  { code: "BJ", label: "+229" },
+  { code: "US", label: "+1" },
+  { code: "GB", label: "+44" },
+  { code: "CA", label: "+1" },
+  { code: "AU", label: "+61" },
+  { code: "TG", label: "+228" },
+];
 
 const ListNotPayed = () => {
-  const [loading, setLoading] = useState(false);
 
+  const [loading, setLoading] = useState(false);
   const [militants, setMilitants] = useState<MilitantType[]|[]>([])
-  const auth = useSelector((state: RootState) => state.authReducer)
+  const auth = useSelector((state: RootState)=> state.authReducer)
   
   const handleListMilitant = async() => {
     setLoading(true)
-    const response = await getDemandes(auth.user.id, auth.token)
+    const response = await getDemandesNonPayer(auth.token)
     if(response.success) {
       setMilitants(response.data)
       setLoading(false)
@@ -130,7 +163,6 @@ const ListNotPayed = () => {
     }
   }
 
-
   useEffect(()=>{
     handleListMilitant()
   },[])
@@ -138,14 +170,18 @@ const ListNotPayed = () => {
   return (
     <>
       <PageMeta
-        title="Bloc Républicain | Liste des non imprimés"
-        description="Cette page affiche la liste des non imprimés" 
+        title="Bloc Républicain | Liste des demandes impayées"
+        description="Cette page affiche la liste des demandes impayées."
       />
       <PageBreadcrumb pageTitle="Liste des demandes" />
       <div className="rounded-2xl  w-full flex flex-row justify-between items-center bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
-        <h3 className="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90">
-          Liste des demandes non imprimé
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+          Liste des demandes impayées
         </h3>
+        {/* <Button variant="primary" onClick={openModal}>
+          <PlusIcon />
+          Ajouter une demande
+        </Button> */}
       </div>
 
       {/* Tableau des demandes Data Table */}

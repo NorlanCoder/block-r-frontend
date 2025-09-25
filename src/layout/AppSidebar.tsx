@@ -54,7 +54,7 @@ const navItems: NavItem[] = [
   {
     icon: <GroupIcon />,
     name: "Liste des administrateurs",
-    path: "/super-admin/admin/list",
+    path: "/admin-sup/admin/list",
     role: ["super_admin"],
   },
   {

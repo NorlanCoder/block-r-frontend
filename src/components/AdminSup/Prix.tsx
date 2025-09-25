@@ -3,53 +3,46 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { RootState } from "../../store";
-import { getPrix, updatePrix } from "../../api/auth";
+import { updatePrix } from "../../api/auth";
+import { setPrice } from "../../store/slices/appSlice";
+import toast from "react-hot-toast";
 
 export default function Prix() {
   const { isOpen, openModal, closeModal } = useModal();
   const auth = useSelector((state: RootState) => state.authReducer);
+  const app = useSelector((state: RootState) => state.appReducer);
+
   const [loading, setLoading] = useState(false);
-  const [prix, setPrix] = useState("1000");
+  const [prix, setPrix] = useState<number|null>(null);
 
-    const fetchStatistique = async (token: string) => {
-        try {
-          const result = await getPrix(token)
-          // console.log(result)
-          console.log(result)
-            setPrix(result.prix);
-        } catch(error) {
-          console.log(error)
-        }
-    };
+  const dispatch = useDispatch()
 
-    useEffect (() => {
-        fetchStatistique(auth.token)
-    }, [auth.token]);
+  useEffect(() => {
+    if(app) setPrix(app.prix)
+  }, [app]);
+
 
   // Gestion des changements de champs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPrix(e.target.value);
+    setPrix(Number(e.target.value));
   };
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    try {
-      const response = await updatePrix(auth.token);
-      console.log("Réponse backend:", response);
 
-      if (!response.user) throw new Error("Erreur de mise à jour");
-
-      closeModal();
-      
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+    const response = await updatePrix(auth.token, prix as number);
+    
+    if(response.prix) {
+      toast.success("Prix mis à jour avec succès !");
+      dispatch(setPrice({prix: Number(response.prix.montant)}))
     }
+
+    setLoading(false);
+
     closeModal();
   };
 
@@ -63,7 +56,7 @@ export default function Prix() {
                     Prix
                 </h4>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                     {prix} FCFA
+                     {app.prix} FCFA
                 </p>
             </div>
 
@@ -107,7 +100,8 @@ export default function Prix() {
                     <Input
                       name="prix"
                       type="text"
-                      value={prix}
+                      value={prix || 0}
+                      placeholder="Prix (FCFA)"
                       onChange={handleChange}
                     />
                   </div>

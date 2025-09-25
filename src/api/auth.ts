@@ -70,13 +70,14 @@ export const getPrix = async (token: string) => {
     return response.json();
 }
 
-export const updatePrix = async (token: string) => {
-    const response = await fetch(`${apiUrl}profile`, {
+export const updatePrix = async (token: string, price: number) => {
+    const response = await fetch(`${apiUrl}super-admin/prix`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
+        body: JSON.stringify({montant: price})
     });
     return response.json();
 };

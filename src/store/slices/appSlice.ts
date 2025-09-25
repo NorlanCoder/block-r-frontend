@@ -21,6 +21,7 @@ const initialAppState = {
   communes: [] as CommuneType[],
   departements: [] as DepartementType[],
   circonscriptions: [] as CirconscriptionType[],
+  prix: 1000
 }
 
 
@@ -37,9 +38,12 @@ export const appSlice = createSlice({
     },
     setCirconscriptions: (state, action) => {
       state.circonscriptions = action.payload;
+    },
+    setPrice: (state, action) => {
+      state.prix = action.payload.prix;
     }
   },
 });
 
-export const { setCommunes, setDepartements, setCirconscriptions } = appSlice.actions;
+export const { setCommunes, setDepartements, setCirconscriptions, setPrice } = appSlice.actions;
 export default appSlice.reducer;

@@ -32,3 +32,14 @@ export const getDepartements = async () => {
     });
     return response.json();
 };
+
+// Get all price
+export const getPrice = async() => {
+    const response = await fetch(`${apiUrl}prix`,{
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+    return response.json();
+}

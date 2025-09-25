@@ -3,15 +3,15 @@ import PageBreadcrumb from '../../components/common/PageBreadCrumb'
 import PageMeta from '../../components/common/PageMeta'
 import { ColumnDef } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
-import { getAgents, toggleAgent } from '../../api/admin';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import Badge from '../../components/ui/badge/Badge';
 import { LockIcon } from '../../icons';
 import Button from '../../components/ui/button/Button';
+import { getAdmins, toggleAdmin } from '../../api/supAdmin';
 
-export type UserType = {
+export type AdminType = {
     id: string;
     nom: string;
     prenom: string;
@@ -21,21 +21,16 @@ export type UserType = {
     photo: string;
     status: string;
     is_active: boolean;
-    militants_count: number;
 };
-
-
-
-const UserList = () => {
-
-    const [users, setUsers] = useState<UserType[]|[]>([])
+const AdminList = () => {
+    const [users, setUsers] = useState<AdminType[]|[]>([])
     const [loading, setLoading] = useState(true)
     const [loadingButton, setLoadingButton] = useState(false)
     const auth = useSelector((state: RootState) => state.authReducer);
 
     const handleLoadUser = async() => {
         setLoading(true)
-        const response = await getAgents(auth.token)
+        const response = await getAdmins(auth.token)
         if(response.total) {
             setUsers(response.data)
             setLoading(false)
@@ -47,7 +42,7 @@ const UserList = () => {
 
     const handleBlockUser = async(id: string) => {
         setLoadingButton(true)
-        const response = await toggleAgent(id, auth.token)
+        const response = await toggleAdmin(id, auth.token)
         if(response.agent) {
             handleLoadUser()
             setLoadingButton(false)
@@ -57,7 +52,7 @@ const UserList = () => {
         }
     }
 
-    const columns: ColumnDef<UserType>[] = [
+    const columns: ColumnDef<AdminType>[] = [
         {
             header: 'Nom',
             accessorKey: 'nom',
@@ -69,10 +64,6 @@ const UserList = () => {
         {
             header: 'Telephone',
             accessorKey: 'telephone',
-        },
-        {
-            header: 'Nombre de militant',
-            accessorKey: 'militants_count',
         },
         {
             header: "Status",
@@ -88,7 +79,7 @@ const UserList = () => {
             }
             return (
                 <div className="flex items-center justify-center gap-2">
-                <Badge variant="solid" color="error">Inactif</Badge>
+                    <Badge variant="solid" color="error">Inactif</Badge>
                 </div>
             )
             },
@@ -119,13 +110,13 @@ const UserList = () => {
     return (
         <>
       <PageMeta
-        title="Bloc Républicain | Liste des utilisateurs"
-        description="Cette page affiche la liste des utilisateurs."
+        title="Bloc Républicain | Liste des administrateurs"
+        description="Cette page affiche la liste des administrateurs."
       />
-      <PageBreadcrumb pageTitle="Liste des utilisateurs" />
+      <PageBreadcrumb pageTitle="Liste des administrateurs" />
       <div className="rounded-2xl  w-full flex flex-row justify-between items-center bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
         <h3 className="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90">
-          Liste des utilisateurs
+          Liste des administrateurs
         </h3>
       </div>
 
@@ -136,4 +127,4 @@ const UserList = () => {
     )
 }
 
-export default UserList
+export default AdminList

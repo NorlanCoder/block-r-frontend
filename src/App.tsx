@@ -26,9 +26,9 @@ import { persistor, RootState } from "./store";
 import ProtectedRoute from "./components/new/ProtectedRoute";
 import HomeAdminSup from "./pages/AdminSup/HomeAdminSup";
 import PrixComponent from "./pages/AdminSup/PrixComponent";
-import { setCirconscriptions, setCommunes, setDepartements } from "./store/slices/appSlice";
+import { setCirconscriptions, setCommunes, setDepartements, setPrice } from "./store/slices/appSlice";
 import { useEffect } from "react";
-import { getCirconscriptions, getCommunes, getDepartements } from "./api/app";
+import { getCirconscriptions, getCommunes, getDepartements, getPrice } from "./api/app";
 import { useDispatch, useSelector } from "react-redux";
 import { Toaster } from "react-hot-toast";
 import HomeAdmin from "./pages/Admin/HomeAdmin";
@@ -37,8 +37,10 @@ import ListRefused from "./pages/Global/ListRefused";
 import ListCorrected from "./pages/Global/ListCorrected";
 import ListPayed from "./pages/Global/ListPayed";
 import ListPrint from "./pages/Global/ListPrint";
-import ListNoPrint from "./pages/Global/ListNotPrint";
 import ListNotPayed from "./pages/Global/ListNotPayed";
+import AdminList from "./pages/AdminSup/AdminList";
+import AllList from "./pages/Global/AllList";
+import ListNotPrint from "./pages/Global/ListNotPrint";
 
 export default function App() {
 
@@ -52,9 +54,14 @@ export default function App() {
     const departements = await getDepartements();
     dispatch(setDepartements(departements.data));
   };
+  const fetchPrice = async() => {
+    const price = await getPrice();
+    // console.log(price);
+    dispatch(setPrice(price.length > 0 ? {prix: Number(price[0].montant)} : 2000));
+  }
   const fetchCirconscriptions = async () => {
     const circonscriptions = await getCirconscriptions();
-    console.log(circonscriptions);
+    // console.log(circonscriptions);
     dispatch(setCirconscriptions(circonscriptions.data));
   };
 
@@ -62,6 +69,7 @@ export default function App() {
     fetchCommunes();
     fetchDepartements();
     fetchCirconscriptions();
+    fetchPrice();
   }, []);
 
   const auth = useSelector((state: RootState) => state.authReducer);
@@ -91,18 +99,19 @@ export default function App() {
                 <Route path="/admin-sup" >
                   <Route index element={<HomeAdminSup />} />
                   <Route path="prix" element={<PrixComponent />} />
+                  <Route path="admin/list" element={<AdminList />} />
                 </Route>
 
                 <Route path="/admin" >
                   <Route index element={<HomeAdmin />} />
                   <Route path="utilisateurs" element={<UserList />} />
-                  <Route path="demande/list" element={<UserList />} />
+                  <Route path="demande/list" element={<AllList />} />
                   <Route path="demande/payer" element={<ListPayed />} />
                   <Route path="demande/impayer" element={<ListNotPayed />} />
                   <Route path="demande/corriger" element={<ListCorrected />} />
                   <Route path="demande/refuser" element={<ListRefused />} />
                   <Route path="demande/imprimer" element={<ListPrint />} />
-                  <Route path="demande/non-imprimer" element={<ListNoPrint />} />
+                  <Route path="demande/non-imprimer" element={<ListNotPrint />} />
 
                 </Route>
 
