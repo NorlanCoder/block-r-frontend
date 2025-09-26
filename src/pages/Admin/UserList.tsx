@@ -71,6 +71,10 @@ const UserList = () => {
             accessorKey: 'telephone',
         },
         {
+            header: 'E-mail',
+            accessorKey: 'email',
+        },
+        {
             header: 'Nombre de militant',
             accessorKey: 'militants_count',
         },

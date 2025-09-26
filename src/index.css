@@ -776,3 +776,26 @@ span.flatpickr-weekday,
 .simplebar-scrollbar.simplebar-visible:before {
   @apply opacity-100;
 }
+
+/* Impression carte */
+@media print {
+  body * {
+    visibility: hidden; /* Cache tout le reste */
+  }
+
+  .card-preview, .card-preview * {
+    visibility: visible; /* Affiche seulement la carte */
+  }
+
+  .card-preview {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    border: none !important;
+    box-shadow: none !important;
+    width: 86mm !important;
+    height: 54mm !important;
+    page-break-inside: avoid;
+  }
+}

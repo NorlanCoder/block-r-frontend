@@ -15,7 +15,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ militant }) => {
     <div className="flex items-center justify-center m-14">
         <div
             id="card-preview"
-            className="relative border rounded shadow-md bg-white flex flex-row justify-between p-4 py-5"
+            className="card-preview relative border rounded shadow-md bg-white flex flex-row justify-between p-4 py-5"
             style={{
                 width: "86mm",
                 height: "54mm",
