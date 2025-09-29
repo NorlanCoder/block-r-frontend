@@ -228,6 +228,9 @@ const AllList = () => {
                     <Button size="sm" variant="outline" onClick={() => handleReject(militant)}>
                         <PencilIcon className="w-4 h-4" />
                     </Button>
+                    <Button size="sm" variant="primary" onClick={() => markToCorrected(militant.id)}>
+                        <FaCheckDouble className="w-3 h-3 text-success" />
+                    </Button>
                 </div>
             )
             default:
