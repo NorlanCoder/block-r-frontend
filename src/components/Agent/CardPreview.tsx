@@ -15,7 +15,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ militant }) => {
     <div className="flex items-center justify-center m-14">
         <div
             id="card-preview"
-            className="card-preview relative border rounded shadow-md bg-white flex flex-row justify-between p-4 py-5"
+            className="card-preview relative border rounded shadow-md bg-white flex flex-row justify-between"
             style={{
                 width: "86mm",
                 height: "54mm",
@@ -24,29 +24,29 @@ const CardPreview: React.FC<CardPreviewProps> = ({ militant }) => {
             }}
         >
             <div className="text-gray-600" style={{ width: "80%", maxWidth: "80%" }}>
-                <div className="flex mb-2 gap-2 items-center">
-                    <FaUser className="mr-2 w-3" />
-                    <h3 className="text-sm font-bold">{militant.nom} {militant.prenom}</h3>
+                <div className="flex gap-2 items-center">
+                    <h3 className="text-[11px] pl-10">{militant.nom}</h3>
                 </div>
-                <div className="flex mb-2 gap-2 items-center">
-                    <FaLocationArrow className="mr-2 w-3" />
-                    <p className="text-[11px]">Fédération: {app.departements.find((d) => d.code_dep === militant.departement_id)?.lib_dep}</p>
+                <div className="flex gap-2 items-center">
+                    <p className="text-[11px] pl-10">{militant.prenom}</p>
                 </div>
-                <div className="flex mb-2 gap-2 items-center">
-                    <FaCircle className="mr-2 w-3" />
-                    <p className="text-[11px]">Comité: {app.circonscriptions.find((c) => c.code_circ === militant.circonscription_id)?.lib_circ}</p>
+                <div className="flex gap-2 items-center">
+                    <p className="text-[11px] pl-10">{militant.profession}</p>
                 </div>
-                <div className="flex mb-2 gap-2 items-center">
-                    <FaFileAlt className="mr-2 w-2" />
-                    <p className="text-[11px]">Section: {app.communes.find((s) => s.code_com === militant.commune_id)?.lib_com}</p>
+                <div className="flex gap-2 items-center">
+                    <p className="text-[11px] pl-10">{militant.adresse}</p>
                 </div>
-                <div className="flex mb-2 gap-2 items-center">
-                    <FaHome className="mr-2 w-3" />
-                    <p className="text-[11px]"> {militant.adresse}</p>
+                <div className="flex gap-2 items-center">
+                    <p className="text-[11px] pl-10">{app.communes.find((s) => s.code_com === militant.commune_id)?.lib_com}</p>
                 </div>
+                <div className="flex gap-2 items-center">
+                    <p className="text-[11px] pl-10">{app.departements.find((d) => d.code_dep === militant.departement_id)?.lib_dep}</p>
+                </div>
+                {/* <div className="flex gap-2 items-center">
+                    <p className="text-[11px] pl-10">{app.circonscriptions.find((c) => c.code_circ === militant.circonscription_id)?.lib_circ}</p>
+                </div> */}
                 <div className="flex mb-2 gap-2 items-center">
-                    <FaPhone className="mr-2 w-3" />
-                    <p className="text-[11px]">{militant.telephone}</p>
+                    <p className="text-[11px] pl-10">{militant.telephone}</p>
                 </div>
             </div>
             <div>
