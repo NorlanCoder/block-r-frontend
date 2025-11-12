@@ -791,11 +791,24 @@ span.flatpickr-weekday,
     position: absolute;
     left: 0;
     top: 0;
-    margin: 0;
-    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid #000 !important;
     box-shadow: none !important;
     width: 86mm !important;
     height: 54mm !important;
+    background: #1ccccc !important;
     page-break-inside: avoid;
+    page-break-after: avoid;
+  }
+
+  .card-preview table {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .card-preview img {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 }
