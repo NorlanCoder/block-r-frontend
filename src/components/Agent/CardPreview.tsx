@@ -37,7 +37,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ militant }) => {
         style={{
           width: "86mm",
           height: "54mm",
-          background: "#1ccccc",
+          background: "#9FC35D",
           border: "1px solid #000",
           boxShadow: "0 0 5px rgba(0, 0, 0, 0.3)",
           margin: 0,
@@ -46,7 +46,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ militant }) => {
         }}
       >
         {/* QR Code positionné absolument comme dans le PHP */}
-        <div
+        {/* <div
           style={{
             position: "absolute",
             top: "40mm",
@@ -68,7 +68,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ militant }) => {
             fgColor="#000000"
             style={{ width: "10mm", height: "10mm" }}
           />
-        </div>
+        </div> */}
 
         {/* Table structure comme dans le PHP */}
         <table
@@ -85,9 +85,9 @@ const CardPreview: React.FC<CardPreviewProps> = ({ militant }) => {
             <tr>
               {/* Colonne gauche avec les informations */}
               <td
+                rowSpan={2}
                 style={{
                   width: "70%",
-                  rowSpan: 2,
                   paddingLeft: "15px",
                   lineHeight: "13px",
                   paddingTop: "48px",
@@ -123,12 +123,12 @@ const CardPreview: React.FC<CardPreviewProps> = ({ militant }) => {
                 <br />
                 {/* Commune / Département */}
                 <span style={{ fontSize: "9px", marginTop: "8px" }}>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{communeName}/{departementName}
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{communeName}/{departementName}
                 </span>
                 <br />
                 {/* Contact */}
                 <span style={{ fontSize: "10px", marginTop: "9px" }}>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;00229 {militant.telephone || ""}
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {militant.telephone || ""}
                 </span>
                 <br />
               </td>
