@@ -777,38 +777,149 @@ span.flatpickr-weekday,
   @apply opacity-100;
 }
 
-/* Impression carte */
+/* Impression carte - Format CR-80 pour FARGO HP5000 */
 @media print {
-  body * {
-    visibility: hidden; /* Cache tout le reste */
+  @page {
+    size: 86mm 54mm;
+    margin: 0;
+    padding: 0;
   }
 
-  .card-preview, .card-preview * {
-    visibility: visible; /* Affiche seulement la carte */
-  }
-
-  .card-preview {
-    position: absolute;
-    left: 0;
-    top: 0;
+  html, body {
+    width: 86mm !important;
+    height: 54mm !important;
     margin: 0 !important;
     padding: 0 !important;
-    border: 1px solid #000 !important;
+    overflow: hidden !important;
+  }
+
+  /* Rendre tout visible par défaut dans le contexte d'impression */
+  body * {
+    visibility: visible !important;
+  }
+
+  /* S'assurer que tous les conteneurs sont visibles */
+  body > div,
+  body > div > div {
+    visibility: visible !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    page-break-inside: avoid !important;
+    overflow: visible !important;
+    position: relative !important;
+  }
+
+  /* S'assurer que tous les divs parents ne causent pas de problème */
+  div {
+    page-break-inside: avoid !important;
+  }
+
+  /* Rendre visible la carte et tout son contenu */
+  .card-preview {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 9999 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
     box-shadow: none !important;
     width: 86mm !important;
     height: 54mm !important;
-    background: #1ccccc !important;
-    page-break-inside: avoid;
-    page-break-after: avoid;
+    max-width: 86mm !important;
+    max-height: 54mm !important;
+    background: white !important;
+    page-break-inside: avoid !important;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+    transform-origin: top left !important;
+    -webkit-transform-origin: top left !important;
+    overflow: hidden !important;
+    display: block !important;
+    visibility: visible !important;
   }
 
+  .card-preview * {
+    visibility: visible !important;
+  }
+
+  /* S'assurer que les éléments de tableau sont correctement affichés */
   .card-preview table {
+    display: table !important;
+    visibility: visible !important;
     width: 100% !important;
     height: 100% !important;
+    border-collapse: collapse !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    table-layout: fixed !important;
+  }
+
+  .card-preview tr {
+    display: table-row !important;
+    visibility: visible !important;
+  }
+
+  .card-preview td {
+    display: table-cell !important;
+    visibility: visible !important;
+    page-break-inside: avoid !important;
+    overflow: hidden !important;
+  }
+
+  .card-preview tbody {
+    display: table-row-group !important;
+    visibility: visible !important;
+  }
+
+  .card-preview span {
+    display: inline !important;
+    visibility: visible !important;
+  }
+
+  .card-preview br {
+    display: inline !important;
+    visibility: visible !important;
   }
 
   .card-preview img {
-    print-color-adjust: exact;
-    -webkit-print-color-adjust: exact;
+    display: inline-block !important;
+    visibility: visible !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    max-width: 70px !important;
+    height: auto !important;
+    object-fit: cover !important;
+  }
+
+  .card-preview svg {
+    display: block !important;
+    visibility: visible !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Préserver le background de #president-badge lors de l'impression */
+  #president-badge {
+    background: #000 !important;
+    background-color: #000 !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Éviter l'inversion et garantir l'orientation correcte */
+  .card-preview * {
+    transform: none !important;
+    -webkit-transform: none !important;
+    transform-origin: top left !important;
+    -webkit-transform-origin: top left !important;
   }
 }

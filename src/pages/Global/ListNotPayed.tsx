@@ -56,7 +56,42 @@ const ListNotPayed = () => {
 
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const handlePrint = useReactToPrint({contentRef: cardRef});
+  const handlePrint = useReactToPrint({
+    contentRef: cardRef,
+    pageStyle: `
+      @page {
+        size: 86mm 54mm;
+        margin: 0;
+        padding: 0;
+      }
+      @media print {
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        .card-preview {
+          transform: none !important;
+          -webkit-transform: none !important;
+        }
+      }
+    `,
+    documentTitle: `Carte_${selectedMilitant?.nom || 'membre'}_${selectedMilitant?.prenom || ''}`,
+    onBeforeGetContent: () => {
+      const images = cardRef.current?.querySelectorAll('img');
+      if (images) {
+        return Promise.all(
+          Array.from(images).map((img) => {
+            if (img.complete) return Promise.resolve();
+            return new Promise((resolve) => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            });
+          })
+        );
+      }
+      return Promise.resolve();
+    },
+  });
 
   const markAsPrinted = async(claimId: number) => {
     setButtonLoading(true)

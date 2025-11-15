@@ -30,27 +30,29 @@ const CardPreview: React.FC<CardPreviewProps> = ({ militant }) => {
   const numCarteFormat = formatCardNumber(militant.reference_carte);
 
   return (
-    <div className="flex items-center justify-center m-14">
+    <div className="flex items-center justify-center m-14" style={{ display: 'block' }}>
       <div
         id="card-preview"
         className="card-preview relative"
         style={{
           width: "86mm",
           height: "54mm",
-          background: "#9FC35D",
+          background: "white",
           border: "1px solid #000",
           boxShadow: "0 0 5px rgba(0, 0, 0, 0.3)",
           margin: 0,
           padding: 0,
           position: "relative",
+          transform: "none",
+          WebkitTransform: "none",
         }}
       >
         {/* QR Code positionné absolument comme dans le PHP */}
-        {/* <div
+        <div
           style={{
             position: "absolute",
-            top: "40mm",
-            left: "35mm",
+            marginTop: "42mm",
+            marginLeft: "39mm",
             backgroundColor: "#FFFFFF",
             border: "none",
             width: "10mm",
@@ -58,6 +60,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ militant }) => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            padding: "1mm",
           }}
         >
           <QRCodeSVG
@@ -66,9 +69,28 @@ const CardPreview: React.FC<CardPreviewProps> = ({ militant }) => {
             level="L"
             bgColor="#FFFFFF"
             fgColor="#000000"
-            style={{ width: "10mm", height: "10mm" }}
+            style={{ width: "10mm", height: "10mm", maxWidth: "10mm", maxHeight: "10mm" }}
           />
-        </div> */}
+        </div>
+
+        <div
+          id="president-badge"
+          style={{
+            position: "absolute",
+            marginTop: "40mm",
+            marginLeft: "40mm",
+            backgroundColor: "#000",
+            border: "none",
+            width: "45mm",
+            height: "2.5mm",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1mm",
+          }}
+        >
+          <span style={{ color: "#FFF", fontSize: "7px", fontWeight: "bold" }}>Président</span>
+        </div>
 
         {/* Table structure comme dans le PHP */}
         <table
@@ -90,45 +112,47 @@ const CardPreview: React.FC<CardPreviewProps> = ({ militant }) => {
                   width: "70%",
                   paddingLeft: "15px",
                   lineHeight: "13px",
-                  paddingTop: "48px",
+                  paddingTop: "42px",
                   fontSize: "8px",
                   letterSpacing: "2px",
                   verticalAlign: "top",
+                  fontWeight: "bold",
                 }}
               >
                 {/* Nom */}
                 <span style={{ marginTop: "1px", fontSize: "10px" }}>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{militant.nom || ""}
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{militant.nom || ""}
                 </span>
                 <br />
                 {/* Prénom */}
                 <span style={{ marginTop: "2px", fontSize: "10px" }}>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{militant.prenom || ""}
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{militant.prenom || ""}
                 </span>
                 <br />
                 {/* Profession */}
                 <span style={{ marginTop: "3px", fontSize: "10px" }}>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{militant.profession || ""}
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{militant.profession || ""}
                 </span>
                 <br />
                 {/* Adresse */}
                 <span style={{ marginTop: "5px", fontSize: "10px" }}>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{militant.adresse || ""}
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{militant.adresse || ""}
                 </span>
                 <br />
                 {/* Circonscription */}
-                <span style={{ marginTop: "7px", fontSize: "9px" }}>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{circonscriptionName}
+                <span style={{ marginTop: "7px", fontSize: "7px", fontWeight: "extrabold" }}>
+                  {/* Si talle de la circonscription est plus grande que 27 caractères, afficher les 27 premiers caractères et ajouter ... */}
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{circonscriptionName.length > 27 ? circonscriptionName.slice(0, 27)+"." : circonscriptionName}
                 </span>
                 <br />
                 {/* Commune / Département */}
-                <span style={{ fontSize: "9px", marginTop: "8px" }}>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{communeName}/{departementName}
+                <span style={{ fontSize: "7px", marginTop: "11px", fontWeight: "extrabold" }}>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{communeName}/{departementName}
                 </span>
                 <br />
                 {/* Contact */}
-                <span style={{ fontSize: "10px", marginTop: "9px" }}>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {militant.telephone || ""}
+                <span style={{ fontSize: "10px", marginTop: "12px" }}>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {militant.telephone || ""}
                 </span>
                 <br />
               </td>
@@ -136,11 +160,13 @@ const CardPreview: React.FC<CardPreviewProps> = ({ militant }) => {
               <td
                 align="center"
                 style={{
-                  paddingTop: "13px",
+                  paddingTop: "0px",
                   fontSize: "10px",
+                  fontWeight: "bold",
                 }}
               >
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{numCarteFormat}
+                {/* Limite numero de carte a 6 chiffres */}
+                {numCarteFormat.length > 6 ? numCarteFormat.slice(0, 6) : numCarteFormat}
               </td>
             </tr>
             <tr>
@@ -163,7 +189,7 @@ const CardPreview: React.FC<CardPreviewProps> = ({ militant }) => {
                     width: "70px",
                     height: "auto",
                     maxWidth: "70px",
-                    border: "1px solid black",
+                    // border: "1px solid black",
                     objectFit: "cover",
                   }}
                 />

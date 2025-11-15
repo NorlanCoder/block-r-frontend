@@ -55,7 +55,54 @@ const ListPrint = () => {
 
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const handlePrint = useReactToPrint({contentRef: cardRef});
+  const handlePrint = useReactToPrint({
+    contentRef: cardRef,
+    pageStyle: `
+      @page {
+        size: 86mm 54mm;
+        margin: 0;
+        padding: 0;
+      }
+      @media print {
+        html, body {
+          width: 86mm !important;
+          height: 54mm !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          overflow: hidden !important;
+        }
+        body * {
+          visibility: visible !important;
+        }
+        .card-preview {
+          transform: none !important;
+          -webkit-transform: none !important;
+          visibility: visible !important;
+          display: block !important;
+        }
+        .card-preview * {
+          visibility: visible !important;
+        }
+      }
+    `,
+    documentTitle: `Carte_${selectedMilitant?.nom || 'membre'}_${selectedMilitant?.prenom || ''}`,
+    onBeforeGetContent: () => {
+      // S'assurer que les images sont chargées avant l'impression
+      const images = cardRef.current?.querySelectorAll('img');
+      if (images) {
+        return Promise.all(
+          Array.from(images).map((img) => {
+            if (img.complete) return Promise.resolve();
+            return new Promise((resolve) => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            });
+          })
+        );
+      }
+      return Promise.resolve();
+    },
+  });
 
   const markAsPrinted = async(claimId: number) => {
     setButtonLoading(true)
